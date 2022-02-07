@@ -3,6 +3,7 @@ import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -10,9 +11,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
         setPersons(response.data)
       })
@@ -22,7 +22,7 @@ const App = () => {
     event.preventDefault()
     const nameObject = {
       name: newName,
-      id: persons.length + 1,
+      //id: persons.length + 1,
       number: newNumber
     }
     
@@ -39,6 +39,12 @@ const App = () => {
     } else {
       setPersons(persons.concat(nameObject))
       setNewName(nameObject.name)
+      personService
+        .create(nameObject)
+        .then(response => {
+          setPersons(persons.concat(response.data))
+          setNewName('')
+        })
     }
   }
 
